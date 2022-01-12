@@ -5,13 +5,17 @@ using TMPro;
 
 [ExecuteInEditMode]
 [SelectionBase]
+[RequireComponent(typeof(Waypoint))]
 public class CubeEditor : MonoBehaviour
 {
-    [Range(1f, 20f)]
-    [SerializeField] float gridSize = 10f;
 
     TextMeshPro textMeshPro;
-    
+    Waypoint waypoint;
+
+    void Awake()
+    {
+        waypoint = GetComponent<Waypoint>();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -21,18 +25,21 @@ public class CubeEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SnapPosition();
+        SnapToGrid();
+        UpdateLabel();
     }
 
-    void SnapPosition()
+    void SnapToGrid()
     {
-        Vector3 snapPos;
-        snapPos.x = Mathf.RoundToInt(transform.position.x / gridSize) * gridSize;
-        snapPos.y = Mathf.RoundToInt(transform.position.y / gridSize) * gridSize;
-        snapPos.z = Mathf.RoundToInt(transform.position.z / gridSize) * gridSize;
+        int gridSize = waypoint.GetGridSize();
+        transform.position = waypoint.GetGridPos() * gridSize;
+    }
 
-        transform.position = snapPos;
-        string labelText = snapPos.x / gridSize + "," + snapPos.z / gridSize;
+    void UpdateLabel()
+    {
+        int gridSize = waypoint.GetGridSize();
+        Vector3 gridPos = waypoint.GetGridPos();
+        string labelText = gridPos.x + "," + gridPos.y + "," + gridPos.z;
         textMeshPro.text = labelText;
         gameObject.name = labelText;
     }
