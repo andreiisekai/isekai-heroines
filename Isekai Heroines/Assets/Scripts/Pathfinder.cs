@@ -10,26 +10,35 @@ public class Pathfinder : MonoBehaviour
     Queue<Waypoint> queue = new Queue<Waypoint>();
     bool isRunning = true;
     Waypoint searchCenter;
+    List<Waypoint> path = new List<Waypoint>();
 
     Vector3[] directions =
     {
         Vector3.up, Vector3.down, Vector3.forward, Vector3.right, Vector3.back,Vector3.left,
     };
-    // Start is called before the first frame update
-    void Start()
+
+    public List<Waypoint> GetPath()
     {
         LoadBlocks();
         ColorStartAndEnd();
-        PathFind();
+        BreadthFirstSearch();
+        CreatePath();
+        return path;
     }
-  
-    // Update is called once per frame
-    void Update()
+    void CreatePath()
     {
-        
+        path.Add(endWaypoint);
+        Waypoint previous = endWaypoint.exploredFrom;
+        while (previous != startWaypoint)
+        {
+            path.Add(previous);
+            previous = previous.exploredFrom;
+        }
+        path.Add(startWaypoint);
+        path.Reverse();
     }
 
-    void PathFind()
+    void BreadthFirstSearch()
     {
         queue.Enqueue(startWaypoint);
         while (queue.Count > 0 && isRunning)
